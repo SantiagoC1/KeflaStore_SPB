@@ -15,14 +15,15 @@ public class Invoice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter @Setter private Long id;
 
-    @Getter @Setter private LocalDateTime date;
-
-    @Getter @Setter private String state;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id")
+    @ManyToOne
+    @JoinColumn(name = "client_id", nullable = false)
     @Getter @Setter private Client client;
 
-    @OneToMany(mappedBy = "invoice", fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-    @Getter @Setter private List<InvoiceDetail> invoiceDetails = new ArrayList<>();
+    @Temporal(TemporalType.TIMESTAMP)
+    @Getter @Setter private LocalDateTime date;
+
+    @Getter @Setter private double totalAmount;
+
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Getter @Setter private List<InvoiceDetail> details = new ArrayList<>();
 }

@@ -13,21 +13,21 @@ import java.util.Optional;
 @Service
 public class InvoiceDetailsService {
     @Autowired
-    private InvoicesDetailsRepository invoicesDetailsRepository;
+    private InvoicesDetailsRepository invoiceDetailRepository;
 
-    public InvoiceDetail save(InvoiceDetail invoiceDetail) {
-        return invoicesDetailsRepository.save(invoiceDetail);
+    public List<InvoiceDetail> getAllInvoiceDetails() {
+        return invoiceDetailRepository.findAll();
     }
 
-    public List<InvoiceDetail> findAll(){
-        return invoicesDetailsRepository.findAll();
+    public Optional<InvoiceDetail> getInvoiceDetailById(Long id) {
+        return invoiceDetailRepository.findById(id);
     }
 
-    public Optional<InvoiceDetail> readOneCart(Long id) {
-        return invoicesDetailsRepository.findById(id);
+    public InvoiceDetail saveInvoiceDetail(InvoiceDetail invoiceDetail) {
+        return invoiceDetailRepository.save(invoiceDetail);
     }
 
-    public void delete(Long id) {
-        invoicesDetailsRepository.deleteById(id);
+    public void deleteInvoiceDetail(Long id) {
+        invoiceDetailRepository.deleteById(id);
     }
 }

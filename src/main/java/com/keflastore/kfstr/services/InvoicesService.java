@@ -1,9 +1,11 @@
 package com.keflastore.kfstr.services;
 
 import com.keflastore.kfstr.entities.Invoice;
+
 import com.keflastore.kfstr.repositories.InvoicesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -11,21 +13,22 @@ import java.util.Optional;
 @Service
 public class InvoicesService {
     @Autowired
-    private InvoicesRepository invoicesRepository;
+    private InvoicesRepository invoiceRepository;
 
-    public Invoice save(Invoice invoice) {
-        return invoicesRepository.save(invoice);
+    public List<Invoice> getAllInvoices() {
+        return invoiceRepository.findAll();
     }
 
-    public List<Invoice> findAll(){
-        return invoicesRepository.findAll();
+    public Optional<Invoice> getInvoiceById(Long id) {
+        return invoiceRepository.findById(id);
     }
 
-    public Optional<Invoice> readOneCart(Long id) {
-        return invoicesRepository.findById(id);
+    public Invoice saveInvoice(Invoice invoice) {
+        return invoiceRepository.save(invoice);
     }
 
-    public void delete(Long id) {
-        invoicesRepository.deleteById(id);
+    public void deleteInvoice(Long id) {
+        invoiceRepository.deleteById(id);
     }
+
 }

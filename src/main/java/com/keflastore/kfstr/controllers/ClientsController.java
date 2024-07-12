@@ -23,17 +23,19 @@ public class ClientsController {
     private ClientsService service;
     private static final Logger logger = LoggerFactory.getLogger(ClientsController.class);
 
+    //CREAR
     @PostMapping()
-    public void saveClient(@RequestBody Client client) {
+    public Client saveClient(@RequestBody Client client) {
 
         try {
-            service.save(client);
+            return service.save(client);
         }catch (Exception e) {
             System.out.println(e);
             throw new RuntimeException("CREATE ERROR ");
         }
     }
 
+    //LEER TODOS
     @GetMapping()
     public List<Client> getAllClients() {
         try {
@@ -45,6 +47,8 @@ public class ClientsController {
 
         }
     }
+
+    //LEER POR ID
     @GetMapping("/{id}")
     public Optional<Client> getClient(@PathVariable Long id) {
         try {
@@ -55,6 +59,25 @@ public class ClientsController {
 
     }
     }
+
+    //ACTUALIZAR
+    @PutMapping("{cid}")
+    public ResponseEntity<Client> updateClient(@PathVariable Long cid, @RequestBody Client client) {
+        Optional<Client> clientOptional = service.readOneClient(cid);
+        if (clientOptional.isPresent()) {
+            Client clientu = clientOptional.get();
+            clientu.setName(client.getName());
+            clientu.setLastname(client.getLastname());
+            clientu.setAge(client.getAge());
+            clientu.setDocnumber(client.getDocnumber());
+            Client clientUpdated = service.save(clientu);
+            return ResponseEntity.ok(clientUpdated);
+        }else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
 
     @GetMapping("/{id}/carts")
     public ResponseEntity<List<Cart>> getCarts(@PathVariable Long id) {
@@ -79,6 +102,7 @@ public class ClientsController {
     }
 
 
+    //ELIMINAR
     @DeleteMapping("/{id}")
     public void deleteClient(@PathVariable Long id) {
         try {
