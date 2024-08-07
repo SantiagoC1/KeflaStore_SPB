@@ -1,10 +1,10 @@
 package com.keflastore.kfstr.services;
 
-import com.keflastore.kfstr.entities.Cart;
+
 import com.keflastore.kfstr.entities.Client;
-import com.keflastore.kfstr.entities.Invoice;
 import com.keflastore.kfstr.repositories.ClientsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,17 +29,55 @@ public class ClientsService {
         //deveuelve null si no la encuentra
         return repository.findById(id);
     }
-    public void delete(Long id) {
-        repository.deleteById(id);
-    }
-    public List<Cart> getCartsByClientId(Long clientId) {
-        Optional<Client> client = readOneClient(clientId);
-        return client.isPresent() ? client.get().getCarts() : null;
+
+    public Client updateClient(Long id, Client clientDetails) throws ConfigDataResourceNotFoundException {
+        Optional<Client> clientOptional = readOneClient(id);
+        if (clientOptional.isPresent()) {
+            Client client = clientOptional.get();
+
+            if (clientDetails.getName() != null) {
+                client.setName(clientDetails.getName());
+            }
+            if (clientDetails.getLastname() != null) {
+                client.setLastname(clientDetails.getLastname());
+            }
+            if (clientDetails.getAge() != null) {
+                client.setAge(clientDetails.getAge());
+            }
+            if (clientDetails.getEmail() != null) {
+                client.setEmail(clientDetails.getEmail());
+            }
+            if (clientDetails.getPhone() != null) {
+                client.setPhone(clientDetails.getPhone());
+            }
+            if (clientDetails.getAddress() != null) {
+                client.setAddress(clientDetails.getAddress());
+            }
+            if (clientDetails.getCity() != null) {
+                client.setCity(clientDetails.getCity());
+            }
+            if (clientDetails.getCountry() != null) {
+                client.setCountry(clientDetails.getCountry());
+            }
+            if (clientDetails.getDocnumber() != null) {
+                client.setDocnumber(clientDetails.getDocnumber());
+            }
+
+            return save(client);
+        } else {
+            throw new RuntimeException("client not found with ID: " + id);
+        }
     }
 
-    public List<Invoice> getInvoicesByClientId(Long clientId) {
-        Optional<Client> client = readOneClient(clientId);
-        return client.isPresent() ? client.get().getInvoices() : null;
+    public boolean delete(Long id) {
+        Optional<Client> clientOptional = readOneClient(id);
+        if (clientOptional.isPresent()) {
+            repository.delete(clientOptional.get());
+            return true;
+        } else {
+            return false;
+        }
     }
+
 
 }

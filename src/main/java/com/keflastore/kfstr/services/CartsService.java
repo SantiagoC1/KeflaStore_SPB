@@ -1,7 +1,10 @@
 package com.keflastore.kfstr.services;
 
 import com.keflastore.kfstr.entities.Cart;
+
 import com.keflastore.kfstr.entities.Client;
+
+
 import com.keflastore.kfstr.entities.Product;
 import com.keflastore.kfstr.repositories.CartsRepository;
 import com.keflastore.kfstr.repositories.ClientsRepository;
@@ -16,53 +19,80 @@ import java.util.Optional;
 public class CartsService {
     @Autowired
     private CartsRepository cartsRepository;
-
     @Autowired
     private ClientsRepository clientsRepository;
-
     @Autowired
     private ProductsRepository productsRepository;
 
-    public void addProductToCart(Long cartId, Long productId, Long clientId) {
-        Optional<Cart> cartOptional = cartsRepository.findById(cartId);
-        Optional<Product> productOptional = productsRepository.findById(productId);
-        Optional<Client> clientOptional = clientsRepository.findById(clientId);
+    //Agregar prod al carrito de un cliente
+    public Cart addProduct(Long clientId, Long productId, Integer quantity) {
+        Optional<Client> client = clientsRepository.findById(clientId);
+        Optional<Product> product = productsRepository.findById(productId);
+        if (client.isPresent() & product.isPresent()) {
+            Cart cart = new Cart();
+            cart.setClient(client.get());
+            cart.setProduct(product.get());
+            cart.setQuantity(quantity);
 
-        if (cartOptional.isPresent() && productOptional.isPresent() && clientOptional.isPresent()) {
-            Cart cart = cartOptional.get();
-            Product product = productOptional.get();
-            Client client = clientOptional.get();
-
-            // Asegurarse de que el producto y el cliente no sean nulos
-            if (product == null || client == null) {
-                throw new IllegalArgumentException("Producto o cliente no encontrado");
+            cart.setPrice(product.get().getPrice());
+            cart.setState(false);
+            return cartsRepository.save(cart);
+        }else {
+            throw new RuntimeException("client or product not found");
             }
+    }
 
-            cart.setClient(client);
-            cart.setProduct(product); // Establecer un solo producto en el carrito
-
-            cartsRepository.save(cart);
-        } else {
-            throw new IllegalArgumentException("Carrito, producto o cliente no encontrado");
+    //Quitar prod del carrito
+    public Cart removeProduct(Long cartId) {
+        Optional<Cart> cart = cartsRepository.findById(cartId);
+        if (cart.isPresent()) {
+            cartsRepository.deleteById(cartId);
+            return cart.get();
+        }else{
+            throw new RuntimeException("cart not found");
         }
     }
 
-    public Cart save(Cart cart) {
-        return cartsRepository.save(cart);
+    //Buscar carrito de cliente
+    public List<Cart> findByClientIdAndState(Long clientId) {
+        List<Cart> carts = cartsRepository.findByClientIdAndState(clientId, false);
+        if (carts.isEmpty()) {
+            throw new RuntimeException("cart not found");
+        }else {
+            return carts;
+        }
     }
 
-    public List<Cart>findAll(){
+    //Mostrar todos los carritos
+    public List<Cart> findAllCarts (){
         return cartsRepository.findAll();
     }
 
-    public Optional<Cart> readOneCart(Long id) {
-        return cartsRepository.findById(id);
+    //Actualizar un carrito
+    public Cart updateCart(Long id, Cart cartDetails) {
+        return cartsRepository.findById(id).map(cart -> {
+            if (cartDetails.getQuantity() != null) {
+                cart.setQuantity(cartDetails.getQuantity());
+            }
+            if (cartDetails.getPrice() != null) {
+                cart.setPrice(cartDetails.getPrice());
+            }
+            if (cartDetails.getState() != null) {
+                cart.setState(cartDetails.getState());
+            }
+            if (cartDetails.getProduct() != null) {
+                cart.setProduct(cartDetails.getProduct());
+            }
+            if (cartDetails.getClient() != null) {
+                cart.setClient(cartDetails.getClient());
+            }
+            return cartsRepository.save(cart);
+        }).orElseGet(() -> {
+            cartDetails.setId(id);
+            return cartsRepository.save(cartDetails);
+        });
     }
-
-    public void delete(Long id) {
-        cartsRepository.deleteById(id);
-    }
-
-
 
 }
+
+

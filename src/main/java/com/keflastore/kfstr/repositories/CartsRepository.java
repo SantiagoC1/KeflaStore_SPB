@@ -6,7 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+
 @Repository
 public interface CartsRepository extends JpaRepository<Cart,Long> {
-    List<Cart> findAllByClientId(Long clientId);
+    List<Cart> findByClientIdAndState(Long clientId,Boolean state);
 }

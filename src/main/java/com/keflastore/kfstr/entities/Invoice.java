@@ -1,29 +1,35 @@
 package com.keflastore.kfstr.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
 
 
 @Entity @Table(name = "invoices")
 @NoArgsConstructor @ToString  @EqualsAndHashCode
+@Schema(description = "Represents a invoice")
 public class Invoice {
+    @Schema(description = "Unique identifier of invoice", example ="1")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter @Setter private Long id;
+    @Setter @Getter private Long id;
 
+    @Schema(description = "Identifier of client", example ="2")
     @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)
-    @Getter @Setter private Client client;
+    @JoinColumn(name = "client_id")
+    @JsonIgnore
+    @Setter @Getter private Client client;
 
+    @Schema(description = "date of the invoice", example ="2024-08-02 12:00")
     @Temporal(TemporalType.TIMESTAMP)
-    @Getter @Setter private LocalDateTime date;
+    @Setter @Getter private LocalDateTime date;
 
-    @Getter @Setter private double totalAmount;
+    @Schema(description = "total value of the purchase", example ="299")
+    @Setter @Getter private Double totalAmount;
 
-    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Getter @Setter private List<InvoiceDetail> details = new ArrayList<>();
+
 }
